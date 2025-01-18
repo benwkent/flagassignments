@@ -1,7 +1,9 @@
 import React from "react";
 import {Modal, Form, OverlayTrigger, Tooltip, Row, Col, Spinner} from 'react-bootstrap';
+import {useNavigate} from "react-router-dom";
 import InputMask from 'react-input-mask';
 import "./App.css";
+import { Administration } from "./Administration";
 import styled from "styled-components";
 import 'bootstrap/dist/css/bootstrap.min.css'
 import congrats from './congrats.gif'
@@ -25,6 +27,14 @@ function App() {
     const [showOverallDescription, setShowOverallDescription] = React.useState(false)
     const [showSignupModal, setShowSignupModal] = React.useState(false)
     const [isSubmitted, setIsSubmitted] = React.useState(false)
+    const [isAuthenticated, setIsAuthenticated] = React.useState(localStorage.getItem('authenticated')|| false);
+    const [isLoginSubmitted, setIsLoginSubmitted] = React.useState(false);
+    const [showLogin, setShowLogin] = React.useState(false);
+    const [showInvalidLogin, setShowInvalidLogin] = React.useState(false);
+    const [isLoginSubmitDisabled, setIsLoginSubmitDisabled] = React.useState(true);
+    const [username, setUsername] = React.useState('');
+    const [password, setPassword] = React.useState('');
+    const navigate = useNavigate();
 
     const handleClose = () => {
         setFormData({})
@@ -33,6 +43,10 @@ function App() {
 
     const handleCloseAssignmentDescription = () => {
         setShowAssignmentDescription(false)
+    }
+
+    const handleCloseInvalidLogin = () => {
+        setShowInvalidLogin(false)
     }
 
     const handleCloseExpectation = () => {
@@ -112,12 +126,64 @@ function App() {
             .catch((err) => alert(`Something really bad happened and you didn't actually sign up, probably because Ben isn't really a web developer.\n\nTry again and if this keeps happening, just call/text him to sign up.\n\nIf you want, you could tell him you got the error: ${err.message}`))
     }
 
+    const submitLogin = async () => {
+        if(username === 'ben') {
+            setIsAuthenticated(true)
+            localStorage.setItem('authenticated', true);
+            setUsername('')
+            setPassword('')
+            return true;
+        }
+        setIsAuthenticated(false)
+        localStorage.setItem('authenticated', false);
+        setShowInvalidLogin(true)
+        setUsername('')
+        setPassword('')
+        return false;
+        // fetch('/api/login', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify({
+        //
+        //     }),
+        // })
+        //     .then(parseJSON)
+        //     .then((response) => {
+        //         if (!response.ok) {
+        //             alert(`Something bad happened and you didn't actually sign up, probably because Ben isn't really a web developer.\n\nTry again and if this keeps happening, just call/text him to sign up.\n\nIf you want, you could tell him you got the error: ${response.json.error}`)
+        //         } else {
+        //             handleShowSuccess()
+        //         }
+        //     })
+        //     .catch((err) => alert(`Something really bad happened and you didn't actually sign up, probably because Ben isn't really a web developer.\n\nTry again and if this keeps happening, just call/text him to sign up.\n\nIf you want, you could tell him you got the error: ${err.message}`))
+    }
+
     const handleSubmit = async (event) => {
         setIsSubmitted(true)
         await submit()
         setIsSubmitted(false)
         setShow(false);
     }
+
+    const handleLoginSubmit = async (event) => {
+        event.preventDefault();
+        setIsLoginSubmitted(true)
+        const result = await submitLogin()
+        setIsLoginSubmitted(false)
+        setShowLogin(false);
+        if(result){
+            navigate('/administration')
+        }
+    }
+
+    const handleLoginClose = async (event) => {
+        setUsername('')
+        setPassword('')
+        setShowLogin(false);
+    }
+
     const handleShow = (event) => {
         setTimeslot(event.target.value)
         setShow(true);
@@ -141,6 +207,26 @@ function App() {
         setSelectedHoliday(selectedHoliday);
         setShowSignupModal(true)
     };
+
+    const handleUsernameChange = (e) => {
+        const username = e.target.value;
+        setUsername(username);
+        setIsLoginSubmitDisabled(!stringNotEmpty(username) || !stringNotEmpty(password));
+    };
+
+    const handlePasswordChange = (e) => {
+        const password = e.target.value;
+        setPassword(password);
+        setIsLoginSubmitDisabled(!stringNotEmpty(username) || !stringNotEmpty(password));
+    };
+
+    const handleShowLogin = () => {
+        if (isAuthenticated) {
+            navigate('/administration')
+        } else {
+            setShowLogin(true);
+        }
+    }
 
     const handleChange = (e) => {
         const {name, value} = e.target;
@@ -425,6 +511,55 @@ function App() {
                         </Modal.Body>
                     </Modal>
                 </>
+                <>
+                    <Modal show={showLogin} onHide={handleLoginClose} centered={true}>
+                        <Modal.Header closeButton>
+                            <Modal.Title
+                                className={'mx-auto'}>Administration Login</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <Form>
+                                <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                                    <Form.Label>Username</Form.Label>
+                                    <Form.Control
+                                        autoFocus
+                                        name="name"
+                                        value={formData.username}
+                                        onChange={handleUsernameChange}
+                                    />
+                                </Form.Group>
+                                <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
+                                    <Form.Label>Password</Form.Label>
+                                    <Form.Control
+                                        name="password"
+                                        value={formData.password}
+                                        onChange={handlePasswordChange}
+                                    />
+                                </Form.Group>
+                            </Form>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={handleLoginClose}>
+                                Close
+                            </Button>
+                            <Button variant="primary" onClick={handleLoginSubmit} disabled={isLoginSubmitDisabled}>
+                                {!isLoginSubmitted && "Submit"}
+                                {isLoginSubmitted && <Spinner animation="border" variant="info" />}
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+                </>
+                <>
+                    <Modal show={showInvalidLogin} onHide={handleCloseInvalidLogin} centered={true}>
+                        <Modal.Header closeButton>
+                            <Modal.Title className={'mx-auto'}>Invalid login credentials</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body className={'mx-auto'}>
+                            <p className={'mx-auto'}>The provded username and password were incorrect.</p>
+                        </Modal.Body>
+                    </Modal>
+                </>
+                <LinkButton onClick={handleShowLogin} className="w-10"> Administration </LinkButton>
             </header>
         </div>
     );
