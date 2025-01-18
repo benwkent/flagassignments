@@ -127,38 +127,27 @@ function App() {
     }
 
     const submitLogin = async () => {
-        if(username === 'ben') {
-            setIsAuthenticated(true)
-            localStorage.setItem('authenticated', true);
-            setUsername('')
-            setPassword('')
-            return true;
+        try {
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                }),
+            });
+            if (response.ok) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (err) {
+            alert(`Something really bad happened and you didn't actually sign up, probably because Ben isn't really a web developer.\n\nTry again and if this keeps happening, just call/text him to sign up.\n\nIf you want, you could tell him you got the error: ${err.message}`);
+            return false;
         }
-        setIsAuthenticated(false)
-        localStorage.setItem('authenticated', false);
-        setShowInvalidLogin(true)
-        setUsername('')
-        setPassword('')
-        return false;
-        // fetch('/api/login', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({
-        //
-        //     }),
-        // })
-        //     .then(parseJSON)
-        //     .then((response) => {
-        //         if (!response.ok) {
-        //             alert(`Something bad happened and you didn't actually sign up, probably because Ben isn't really a web developer.\n\nTry again and if this keeps happening, just call/text him to sign up.\n\nIf you want, you could tell him you got the error: ${response.json.error}`)
-        //         } else {
-        //             handleShowSuccess()
-        //         }
-        //     })
-        //     .catch((err) => alert(`Something really bad happened and you didn't actually sign up, probably because Ben isn't really a web developer.\n\nTry again and if this keeps happening, just call/text him to sign up.\n\nIf you want, you could tell him you got the error: ${err.message}`))
-    }
+    };
 
     const handleSubmit = async (event) => {
         setIsSubmitted(true)
@@ -173,8 +162,18 @@ function App() {
         const result = await submitLogin()
         setIsLoginSubmitted(false)
         setShowLogin(false);
+        setUsername('')
+        setPassword('')
         if(result){
+            setShowInvalidLogin(false);
+            setIsAuthenticated(true);
+            localStorage.setItem('authenticated', true)
             navigate('/administration')
+        }
+        else {
+            setShowInvalidLogin(true);
+            setIsAuthenticated(false);
+            localStorage.setItem('authenticated', false)
         }
     }
 
@@ -221,7 +220,7 @@ function App() {
     };
 
     const handleShowLogin = () => {
-        if (isAuthenticated) {
+        if (isAuthenticated === 'true' || isAuthenticated === true) {
             navigate('/administration')
         } else {
             setShowLogin(true);
