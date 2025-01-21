@@ -40,6 +40,4 @@ RUN npm run build
 EXPOSE $PORT
 
 # Configure Nginx for Heroku
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-CMD sed -i -e 's/$PORT/'"$PORT"'/g' /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'
+CMD sed -i -e 's/$PORT/'"$PORT"'/g' /etc/nginx/conf.d/default.conf.template && nginx -g 'daemon off;'
