@@ -32,7 +32,7 @@ RUN npm ci
 RUN npm run build
 
 # Expose port picked by Heroku. Otherwise we couldn't connect to the server running inside a docker container
-EXPOSE 3000
+EXPOSE $PORT
 
 # Configure Nginx for Heroku
 CMD ["nginx", "-g", "daemon off;"]
