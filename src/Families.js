@@ -8,9 +8,6 @@ import InputMask from "react-input-mask";
 
 const Administration = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem('authenticated')|| false);
-    const [showFamiliesModal, setShowFamiliesModal] = useState(false);
-    const [showHolidaysModal, setShowHolidaysModal] = useState(false);
-    const [showAssignmentsModal, setShowAssignmentsModal] = useState(false);
 
 
     if(isAuthenticated === 'true' || isAuthenticated === true) {
