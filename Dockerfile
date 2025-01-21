@@ -1,8 +1,11 @@
 # Get Nginx image from Docker hub
 FROM nginx
 
+# Install envsubst for environment variable substitution
+RUN apt-get update && apt-get install -y gettext-base
+
 # Copy our configuration file to a folder in our Docker image where Nginx will use it
-COPY default.conf.template /etc/nginx/conf.d/default.conf
+COPY default.conf.template /etc/nginx/conf.d/default.conf.template
 
 # Update available packages in Debian
 RUN apt-get update
@@ -35,4 +38,4 @@ RUN npm run build
 EXPOSE $PORT
 
 # Configure Nginx for Heroku
-CMD ["nginx", "-g", "daemon off;"]
+CMD envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'

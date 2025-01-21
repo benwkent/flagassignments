@@ -1,6 +1,6 @@
 server {
 
-  # Listen to port 3000
+  # Listen to port specified by the PORT environment variable
   listen $PORT;
 
   # Serve static files for requests made to /
