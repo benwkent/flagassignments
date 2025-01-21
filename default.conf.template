@@ -1,7 +1,7 @@
 server {
 
   # Listen to port specified by the PORT environment variable
-  listen $PORT;
+  listen 0.0.0.0:$PORT;
 
   # Serve static files for requests made to /
   location / {
