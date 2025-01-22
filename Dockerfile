@@ -41,3 +41,4 @@ EXPOSE $PORT
 # Configure Nginx for Heroku
 CMD /bin/bash -c "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf" && nginx -g 'daemon off;'
 RUN cat /etc/nginx/conf.d/default.conf
+RUN cat /etc/nginx/conf.d/default.conf.template
