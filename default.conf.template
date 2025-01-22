@@ -2,8 +2,7 @@ server {
   listen $PORT default_server;
 
   location / {
-    root   /usr/share/nginx/html;
-    index  index.html index.htm;
+    root /usr/src/app/build;
   }
 
   # Redirect requests made to /api
