@@ -7,6 +7,6 @@ server {
 
   # Redirect requests made to /api
   location /api {
-    proxy_pass http://flags-be-env.eba-qxmknt2v.us-west-1.elasticbeanstalk.com/api;
+    proxy_pass https://mtnhtjb6ga4pxfrt27uy7bxugi0fvymn.lambda-url.us-west-1.on.aws/api;
   }
 }
