@@ -1,12 +1,11 @@
 server {
 
-  # Listen to port specified by the PORT environment variable
-  listen 0.0.0.0:$PORT;
-
-  # Serve static files for requests made to /
+  listen       $PORT;
+  listen  [::]:$PORT;
+  server_name  localhost;
   location / {
-    root /usr/src/app/build;
-    try_files $uri /index.html;
+    root   /usr/share/nginx/html;
+    index  index.html index.htm;
   }
 
   # Redirect requests made to /api
