@@ -5,7 +5,7 @@ FROM nginx
 RUN apt-get update && apt-get install -y gettext-base
 
 # Copy our configuration file to a folder in our Docker image where Nginx will use it
-COPY default.conf.template /etc/nginx/conf.d/default.conf
+COPY default.conf.template /etc/nginx/conf.d/default.conf.template
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Update available packages in Debian
@@ -39,5 +39,5 @@ RUN npm run build
 EXPOSE $PORT
 
 # Configure Nginx for Heroku
-CMD /bin/bash -c "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf" && nginx -g 'daemon off;'
+CMD /bin/bash -c "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && sed -i 's|/usr/share/nginx/html|/usr/src/app/build|g' /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
 RUN cat /etc/nginx/conf.d/default.conf
