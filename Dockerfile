@@ -37,7 +37,7 @@ RUN npm run build
 # Expose port picked by Heroku. Otherwise we couldn't connect to the server running inside a docker container
 EXPOSE $PORT
 
-RUN ECHO $PORT
+RUN echo $PORT
 # Configure Nginx for Heroku
 CMD envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'
 RUN cat /etc/nginx/conf.d/default.conf
