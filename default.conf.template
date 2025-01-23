@@ -8,8 +8,12 @@ server {
     root /usr/src/app/build;
   }
 
-  # Redirect requests made to /api and /login
-  location ~ ^/(api|login) {
+  # Redirect requests made to /api
+  location /api {
     proxy_pass https://mtnhtjb6ga4pxfrt27uy7bxugi0fvymn.lambda-url.us-west-1.on.aws/api;
   }
+
+    location /login {
+      proxy_pass https://mtnhtjb6ga4pxfrt27uy7bxugi0fvymn.lambda-url.us-west-1.on.aws/api;
+    }
 }
